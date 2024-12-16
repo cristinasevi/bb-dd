@@ -42,5 +42,7 @@ INSERT INTO examen.Trabajador (nombre) VALUES ('Juan');
 INSERT INTO examen.Trabajador (nombre) VALUES ('Laura');
 
 SELECT nombre FROM examen.Bus;
+
 SELECT * FROM examen.Trabajador WHERE nombre='Pablo';
+
 SELECT (SELECT CA.nombre FROM examen.Calle CA WHERE CA.idCalle = P.idCalle_FK) AS Calle FROM examen.Pasar P WHERE P.idRuta_FK = 2;
