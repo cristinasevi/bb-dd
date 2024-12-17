@@ -70,6 +70,20 @@ INSERT INTO `Ejercicio-Reformas`.`Reforma-Material` (cantidad, idReforma_FK, idM
 SELECT * FROM `Ejercicio-Reformas`.Solado;
 INSERT INTO `Ejercicio-Reformas`.Solado (numMetros, metrosHormigon, tipoBaldosa, idReforma_FK) VALUES (123, 12, 'Dura', 3);
 
+/* Muestra todos los albañiles que hayan nacido antes del 02/02/1995 junto al NOMBRE de la cuadrilla a la que pertenece. */
+SELECT A.nombre, A.fechaNacimiento, C.nombre 
+FROM `Ejercicio-Reformas`.Albanil AS A, `Ejercicio-Reformas`.Cuadrilla AS C, `Ejercicio-Reformas`.Cuadrilla_Propia AS CP
+WHERE C.idCuadrilla = CP.idCuadrilla_FK AND CP.idCuadrilla_Propia = A.idCuadrilla_Propia_FK AND A.fechaNacimiento <= '1995-02-02';
 
-SELECT * FROM `Ejercicio-Reformas`.Albanil WHERE fechaNacimiento<'1995-02-02'; /* TERMINARRRRRRR */
+/* Muestra el nombre de cuadrillas que se han encargado de realizar la reforma con id = 1 (muestra únicamente el DNI y nombre del cliente 
+sobre el que se hace la reforma). Esta reforma debe tener al menos 3 cuadrillas. */
+SELECT C.nombre, R.DNIcliente, R.nombre
+FROM `Ejercicio-Reformas`.Cuadrilla AS C, `Ejercicio-Reformas`.Cuadrilla_Propia AS CP, 
+`Ejercicio-Reformas`.Cuadrilla_Externa AS CE, `Ejercicio-Reformas`.Reforma AS R, `Ejercicio-Reformas`.`Reforma-Externa` AS RE
+WHERE R.idReforma = 1 AND (CP.idCuadrilla_FK = C.idCuadrilla OR CE.idCuadrilla_FK = C.idCuadrilla) AND R.idCuadrilla_Propia_FK = CP.idCuadrilla_Propia
+AND RE.idReforma_FK = R.idReforma AND RE.idCuadrilla_Externa_FK = CE.CIF;
 
+/* Muestra los nombres de las cuadrillas externas que no hayan participado nunca en ninguna reforma. */
+SELECT C.nombre
+FROM `Ejercicio-Reformas`.Cuadrilla AS C, `Ejercicio-Reformas`.Cuadrilla_Externa AS CE
+WHERE C.idCuadrilla = CE.idCuadrilla_FK AND CE.CIF NOT IN (SELECT RE.idCuadrilla_Externa_FK FROM `Ejercicio-Reformas`.`Reforma-Externa` AS RE);
