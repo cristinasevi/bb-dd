@@ -41,8 +41,11 @@ INSERT INTO examen.Trabajador (nombre) VALUES ('Marta');
 INSERT INTO examen.Trabajador (nombre) VALUES ('Juan');
 INSERT INTO examen.Trabajador (nombre) VALUES ('Laura');
 
+/* Muestra todos los autobuses de la empresa. */
 SELECT nombre FROM examen.Bus;
 
+/* Muestra todos los conductos y monitores de la empresa que se llaman Pablo. */
 SELECT * FROM examen.Trabajador WHERE nombre='Pablo';
 
+/* Muestra por pantalla los nombres de todas las calles por las que pasa la ruta con identificador 2. */
 SELECT (SELECT CA.nombre FROM examen.Calle CA WHERE CA.idCalle = P.idCalle_FK) AS Calle FROM examen.Pasar P WHERE P.idRuta_FK = 2;
