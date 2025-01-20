@@ -63,21 +63,24 @@ GROUP BY A.matr_embarcacion
 HAVING COUNT(A.cod_empleado) >= 2;
 
 /* 19. Mostrar el ranking de años donde más socios ingresaron, sólo años que ingresaron más de 2 socios. */
+SELECT 
+    YEAR(A.fecha_ingreso) AS año_ingreso, 
+    COUNT(A.nif) AS total_socios
+FROM EMBARCACIONES.Socio AS A
+GROUP BY YEAR(A.fecha_ingreso)
+HAVING COUNT(A.nif) >= 2
+ORDER BY total_socios DESC;
 
+/* 20. Mostrar el ranking de empleados que más trabajo tienen (muelles que atienden sumado a embarcaciones de las que se encargan), sólo de empleados que tienen más de 2 trabajos. */
+SELECT A.codigo AS cod_empleado, COUNT(DISTINCT B.numero) + COUNT(DISTINCT C.matr_embarcacion) AS trabajos
+FROM EMBARCACIONES.Empleado AS A JOIN EMBARCACIONES.Muelle AS B JOIN EMBARCACIONES.Se_Encarga AS C
+ON A.codigo = C.cod_empleado AND B.matr_embarcacion = C.matr_embarcacion
+GROUP BY A.codigo
+HAVING COUNT(DISTINCT B.numero) + COUNT(DISTINCT C.matr_embarcacion) > 2;
 
-/* 20. Mostrar el ranking de empleados que más trabajo tienen (muelles que atienden sumado a embarcaciones de las que se encargan), sólo de empleados que tienen más de 2 trabajos. ¿Cómo la modificarías si nos pidieran también el nombre del empleado?. */
-SELECT A.cod_empleado, 
-       COUNT(DISTINCT A.num_muelle) + COUNT(DISTINCT B.matr_embarcacion) AS total_trabajos
-FROM EMBARCACIONES.Atiende AS A JOIN EMBARCACIONES.Se_Encarga AS B
-GROUP BY A.cod_empleado
-HAVING total_trabajos > 2
-ORDER BY total_trabajos DESC;
-
-SELECT E.nombre AS nombre_empleado, 
-       A.cod_empleado, 
-       COUNT(DISTINCT A.num_muelle) + COUNT(DISTINCT B.matr_embarcacion) AS total_trabajos
-FROM EMBARCACIONES.Atiende AS A JOIN EMBARCACIONES.Se_Encarga AS B
-JOIN EMBARCACIONES.Empleado AS E ON A.cod_empleado = E.codigo
-GROUP BY A.cod_empleado, E.nombre
-HAVING total_trabajos > 2
-ORDER BY total_trabajos DESC;
+/* ¿Cómo la modificarías si nos pidieran también el nombre del empleado?. */
+SELECT A.codigo AS cod_empleado, A.nombre, COUNT(DISTINCT B.numero) + COUNT(DISTINCT C.matr_embarcacion) AS trabajos
+FROM EMBARCACIONES.Empleado AS A JOIN EMBARCACIONES.Muelle AS B JOIN EMBARCACIONES.Se_Encarga AS C
+ON A.codigo = C.cod_empleado AND B.matr_embarcacion = C.matr_embarcacion
+GROUP BY A.codigo, A.nombre
+HAVING COUNT(DISTINCT B.numero) + COUNT(DISTINCT C.matr_embarcacion) > 2;
