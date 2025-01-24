@@ -52,18 +52,55 @@ WHERE EXISTS (
 );
 
 /* 26. Mostrar el código de empleados que se encargan exclusivamente de todos los barcos de algún socio (usando ALL/ANY). */
+SELECT A.codigo
+FROM EMBARCACIONES.Empleado AS A JOIN EMBARCACIONES.Se_Encarga AS B 
+JOIN EMBARCACIONES.Embarcacion AS C JOIN EMBARCACIONES.Socio AS D
+ON A.codigo = B.cod_empleado AND C.matricula = B.matr_embarcacion AND D.nif = C.nif_dueño
+WHERE A.codigo = ALL (
+    SELECT F.cod_empleado
+    FROM EMBARCACIONES.Embarcacion AS E JOIN EMBARCACIONES.Se_Encarga AS F 
+    ON E.matricula = F.matr_embarcacion
+    WHERE E.nif_dueño = D.nif
+    GROUP BY F.cod_empleado
+    HAVING COUNT(*) = (
+        SELECT COUNT(*)
+        FROM EMBARCACIONES.Embarcacion
+        WHERE nif_dueño = D.nif
+    )
+);
 
 /* 27. Mostrar nombres de socios que tienen alguna embarcación con dimensiones superiores a 50 (usando ALL/ANY). */
+SELECT A.nombre
+FROM EMBARCACIONES.Socio AS A
+WHERE A.nif = ANY (
+    SELECT B.nif_dueño
+    FROM EMBARCACIONES.Embarcacion AS B
+    WHERE B.dimensiones > 50
+);
 
 /* 28. Mostrar socios que todos sus teléfonos acaban en el mismo número. */
+SELECT A.nif, A.nombre, B.telefono
+FROM EMBARCACIONES.Socio AS A
+JOIN EMBARCACIONES.Telefonos_Socio B 
+ON A.nif = B.nif_socio
+WHERE A.nif = ALL(
+    SELECT B.nif_socio
+    FROM EMBARCACIONES.Telefonos_Socio AS B
+    GROUP BY B.nif_socio
+    HAVING RIGHT(B.telefono, 1)
+);
 
-
-/* a. ¿Y si quisiéramos de la consulta anterior solo a los socios que tienen más de un teléfono? */
-
-
-/* 29. Pero así sólo vemos un teléfono por socio, si queremos ver todos los telefonos, se podria hacer asi: */
-
-/* 30. Mostrar socios que todos sus teléfonos acaban en el mismo número y tienen más de un número de teléfono. */
+/* 29. Mostrar socios que todos sus teléfonos acaban en el mismo número y tienen más de un número de teléfono. */
+SELECT A.nif, A.nombre, B.telefono
+FROM EMBARCACIONES.Socio AS A
+JOIN EMBARCACIONES.Telefonos_Socio B 
+ON A.nif = B.nif_socio
+WHERE A.nif IN (
+    SELECT B.nif_socio
+    FROM EMBARCACIONES.Telefonos_Socio AS B
+    GROUP BY B.nif_socio
+    HAVING COUNT(DISTINCT RIGHT(B.telefono, 1)) = 1
+);
 
 /* 31. Socios que todas sus embarcaciones son de tipo yate. */
 SELECT A.nombre
@@ -73,11 +110,3 @@ WHERE 'yate' = ALL (
     FROM EMBARCACIONES.Embarcacion AS B
     WHERE B.nif_dueño = A.nif
 );
-
-/* 32. Clasificar las embarcaciones según sus dimensiones, si la dimensión es menor que 30 será ‘pequeña’, si está entre 30 y 60 será ‘mediana’, si es mayor que 60 será ‘grande’ y sino (si es 0) será ‘desconocido’. */
-
-/* 33. Mostrar las dimensiones de las embarcaciones en pulgadas (1 metro = 39,3701 pulgadas), si la dimensión es nula, devolverá 0 pulgadas. */
-
-/* 34. Mostrar cuántos productos pedidos, porcentaje respecto del total, media de la cantidad pedida agrupando los productos según hayan sido pedidos más de 30 unidades, 30 unidades o menos de 30 unidades, escribiendo en un atributo a qué grupo pertenecen.
-Nota: Hacer este último ejercicio en la BD de w3schools, usando la tabla Orderdetails:
-OrderDetailID		OrderID	ProductID	Quantity */
